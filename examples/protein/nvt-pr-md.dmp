@@ -1,0 +1,52 @@
+; 预处理选项
+define                   = -DPOSRES ; 告诉GROMACS运行位置限制性模拟
+
+; 运行控制参数
+integrator               = md
+dt                       = 0.002 ; 时间步长(单位为ps, 我们使用了2 fs). 只用于动力学积分器(如md), 能量最小化时不需要
+nsteps                   = 50000 ; 模拟步数(总模拟时间为nsteps*dt)
+
+; 输出控制参数
+nstxout                  = 500   ; 输出模拟坐标的频率(nstxout=500且dt=0.002, 所以每1 ps输出一次)
+nstvout                  = 500   ; 速度保存频率
+nstenergy                = 500   ; 能量保存频率
+nstlog                   = 500   ; log文件输出频率
+energygrps               = Protein Non-Protein
+
+; 近邻列表参数
+nstlist                  = 5
+ns_type                  = grid
+pbc                      = xyz
+rlist                    = 1.0
+
+; 静电和VDW参数
+coulombtype              = PME  ; 长程静电相互作用的计算方法
+pme_order                = 4    ; 三次插值
+fourierspacing           = 0.16 ; FFT间隔
+rcoulomb                 = 1.0  ; 计算静电作用的截断值(单位nm)
+vdw-type                 = Cut-off
+rvdw                     = 1.0
+
+; 温度耦合部分非常重要, 必须正确填写.
+tcoupl                   = v-rescale            ; 随机重新调整速度
+tc-grps                  = Protein  Non-Protein ; 与控温器耦合的组(模型中的每个原子或残基都用一定的索引组表示), 对蛋白和非蛋白使用不同的组分开控制
+tau_t                    = 0.1      0.1         ; 温度耦合的时间常数(单位ps). 必须每个tc_grps指定一个, 且顺序对应
+ref_t                    = 300      300         ; 代表耦合的参考温度(即动力学模拟的温度, 单位K). 每个tc_grp对应一个ref_t
+
+; 色散校正
+DispCorr                 = EnerPres ; 校正VDW截断
+
+; 不使用压力耦合
+pcoupl                   = no                    ; NVT中不能使用压力耦合
+
+; 初始速度选项
+gen_vel                  = yes    ; 根据Maxwell分布随机产生速度
+gen_temp                 = 300    ; 当你改变温度时, 别忘了改变gen_temp变量以生成速度
+gen_seed                 = -1     ; 随机数生成器的种子
+
+; 键约束选项
+constraints              = all-bonds    ; 使用LINCS算法约束所有键
+continuation             = no           ; 第一次运行
+constraint_algorithm     = lincs        ; 约束算法
+lincs_iter               = 1            ; LINCS精度
+lincs_order              = 4            ; LINCS阶数, 与精度有关 

@@ -1,0 +1,21 @@
+; 传递给预处理器的一些定义
+define          = -DFLEXIBLE    ; 使用柔性水模型而非刚性模型, 这样最陡下降法可进一步最小化能量
+
+; 模拟类型, 结束控制, 输出控制参数
+integrator      = steep         ; 指定使用最陡下降法进行能量最小化. 若设为`cg`则使用共轭梯度法
+emtol           = 500.0         ; 若力的最大值小于此值则认为能量最小化收敛(单位kJ mol^-1^ nm^-1^)
+emstep          = 0.01          ; 初始步长(nm)
+nsteps          = 100000          ; 在能量最小化中, 指定最大迭代次数
+nstenergy       = 1             ; 能量写出频率
+energygrps      = System        ; 要写出的能量组
+
+; 近邻列表, 相互作用计算参数
+nstlist         = 1             ; 更新近邻列表的频率. 1表示每步都更新
+ns_type         = grid          ; 近邻列表确定方法(simple或grid)
+coulombtype     = PME           ; 计算长程静电的方法. PME为粒子网格Ewald方法, 还可以使用cut-off
+rlist           = 1.0           ; 短程力近邻列表的截断值
+rcoulomb        = 1.0           ; 长程库仑力的截断值
+vdwtype         = cut-off       ; 计算范德华作用的方法
+rvdw            = 1.0           ; 范德华距离截断值
+constraints     = none          ; 设置模型中使用的约束
+pbc             = xyz           ; 3维周期性边界条件
